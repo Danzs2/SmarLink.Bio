@@ -47,19 +47,44 @@
                     <p class="text-gray-500 font-medium text-sm md:text-base">Daftar sekarang untuk mulai mengelola link Anda.</p>
                 </div>
 
-                <form action="#" class="space-y-4">
+                @if ($errors->any())
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm font-bold">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form action="{{ route('register') }}" method="POST" class="space-y-4">
+                    @csrf
+                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" name="username" placeholder="Username" 
-                            class="w-full p-3.5 md:p-4 bg-gray-100 border-2 border-transparent focus:border-black focus:bg-white rounded-xl transition-all outline-none font-medium text-gray-700 text-sm md:text-base">
-                        <input type="email" name="email" placeholder="Email" 
+                        <div>
+                            <input type="text" name="name" value="{{ old('name') }}" placeholder="Nama Lengkap" required autofocus
+                                class="w-full p-3.5 md:p-4 bg-gray-100 border-2 border-transparent focus:border-black focus:bg-white rounded-xl transition-all outline-none font-medium text-gray-700 text-sm md:text-base">
+                        </div>
+                        <div>
+                            <input type="text" name="username" value="{{ old('username') }}" placeholder="Username" required
+                                class="w-full p-3.5 md:p-4 bg-gray-100 border-2 border-transparent focus:border-black focus:bg-white rounded-xl transition-all outline-none font-medium text-gray-700 text-sm md:text-base">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <input type="email" name="email" value="{{ old('email') }}" placeholder="Email" required
                             class="w-full p-3.5 md:p-4 bg-gray-100 border-2 border-transparent focus:border-black focus:bg-white rounded-xl transition-all outline-none font-medium text-gray-700 text-sm md:text-base">
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="password" name="password" placeholder="Kata sandi" 
-                            class="w-full p-3.5 md:p-4 bg-gray-100 border-2 border-transparent focus:border-black focus:bg-white rounded-xl transition-all outline-none font-medium text-gray-700 text-sm md:text-base">
-                        <input type="password" name="password_confirmation" placeholder="Konfirmasi sandi" 
-                            class="w-full p-3.5 md:p-4 bg-gray-100 border-2 border-transparent focus:border-black focus:bg-white rounded-xl transition-all outline-none font-medium text-gray-700 text-sm md:text-base">
+                        <div>
+                            <input type="password" name="password" placeholder="Kata sandi" required
+                                class="w-full p-3.5 md:p-4 bg-gray-100 border-2 border-transparent focus:border-black focus:bg-white rounded-xl transition-all outline-none font-medium text-gray-700 text-sm md:text-base">
+                        </div>
+                        <div>
+                            <input type="password" name="password_confirmation" placeholder="Konfirmasi sandi" required
+                                class="w-full p-3.5 md:p-4 bg-gray-100 border-2 border-transparent focus:border-black focus:bg-white rounded-xl transition-all outline-none font-medium text-gray-700 text-sm md:text-base">
+                        </div>
                     </div>
 
                     <button type="submit" class="w-full p-3.5 md:p-4 bg-black text-white font-extrabold rounded-full hover:bg-gray-800 transition-all duration-300 shadow-lg active:scale-95 mt-2 text-sm md:text-base">
@@ -69,16 +94,14 @@
 
                 <div class="mt-8 md:mt-10 space-y-4 text-center lg:text-left border-t border-gray-100 pt-6 md:pt-8">
                     <p class="text-xs md:text-sm font-medium text-gray-500">
-                        Sudah punya akun? <a href="/login" class="text-blue-600 font-black hover:underline">Masuk</a>
+                        Sudah punya akun? <a href="{{ route('login') }}" class="text-blue-600 font-black hover:underline">Masuk</a>
                     </p>
                 </div>
             </div>
         </div>
 
         <div class="hidden lg:flex lg:w-[45%] bg-[#1E41B2] relative overflow-hidden items-center justify-center border-l border-gray-100">
-            
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[110%] bg-[#D2E823] rotate-12 rounded-[120px] z-0"></div>
-
             <div class="relative z-10 w-full h-full flex items-center justify-center">
                 
                 <div class="absolute top-[10%] left-[10%] w-12 h-12 bg-[#FF0000] rounded-xl flex items-center justify-center text-white shadow-lg rotate-[-15deg] floating-card" style="animation-delay: 0.5s;">
@@ -114,48 +137,22 @@
 
                 <div class="w-64 h-[500px] bg-white rounded-[45px] border-[8px] border-slate-900 shadow-2xl relative overflow-hidden z-10 scale-95 md:scale-100">
                     <div class="absolute top-0 w-full h-5 bg-slate-900 rounded-b-2xl z-20"></div>
-                    
                     <div class="w-full h-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-12 pb-8 px-5 overflow-hidden relative">
                         <div class="aurora absolute top-0 left-0 w-32 h-32 bg-blue-300/40 rounded-full filter blur-[35px] -ml-8 -mt-8"></div>
                         <div class="aurora absolute bottom-1/4 right-0 w-40 h-40 bg-purple-300/30 rounded-full filter blur-[35px] -mr-10" style="animation-delay: 2s;"></div>
-                        
                         <div class="text-center relative z-10">
                             <img src="{{ asset('images/template1.jpg') }}" alt="Profile" class="w-20 h-20 rounded-full mx-auto border-[3px] border-white shadow-md object-cover">
                             <h3 class="mt-3 text-xl font-black text-gray-900 tracking-tight">Zhao</h3>
                             <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">Artist</p>
                         </div>
-
                         <div class="mt-8 space-y-3 relative z-10">
                             <div class="bg-white/70 backdrop-blur-md p-3 rounded-2xl shadow-sm border border-white flex items-center justify-between hover:bg-white transition cursor-pointer">
                                 <span class="text-xs font-bold text-gray-800">GitHub Repository</span>
                                 <i class="fa-solid fa-chevron-right text-[10px] text-gray-400"></i>
                             </div>
-                            <div class="bg-white/70 backdrop-blur-md p-3 rounded-2xl shadow-sm border border-white flex items-center justify-between hover:bg-white transition cursor-pointer">
-                                <span class="text-xs font-bold text-gray-800">Project PBL 2</span>
-                                <i class="fa-solid fa-chevron-right text-[10px] text-gray-400"></i>
-                            </div>
-                        </div>
-
-                        <div class="absolute bottom-6 left-0 right-0 flex justify-center space-x-5 z-10">
-                            <i class="fa-brands fa-x-twitter text-sm text-black/30"></i>
-                            <i class="fa-brands fa-instagram text-sm text-pink-600/30"></i>
-                            <i class="fa-brands fa-linkedin-in text-sm text-blue-700/30"></i>
                         </div>
                     </div>
                 </div>
-
-                <div class="absolute bottom-[10%] left-[8%] bg-white/95 backdrop-blur-md p-3 rounded-2xl shadow-2xl border border-white z-20 transform rotate-2 floating-card" style="animation-delay: 1.5s;">
-                    <div class="flex items-center space-x-3 text-left">
-                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
-                            <i class="fa-solid fa-link"></i>
-                        </div>
-                        <div>
-                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">New</p>
-                            <p class="text-sm font-black text-gray-900 leading-none">LinkedIn</p>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>

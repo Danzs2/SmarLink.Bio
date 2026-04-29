@@ -3,351 +3,399 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | SmartLink</title>
+    <title>Dashboard Pro - SmartLink Bio</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #F9FAFB; color: #111827; }
-        
-        /* Toggle Switch Custom */
-        .toggle-checkbox:checked { right: 0; border-color: #10B981; }
-        .toggle-checkbox:checked + .toggle-label { background-color: #10B981; }
-        
-        /* Smooth Input */
-        .admin-input {
-            width: 100%; padding: 12px 16px; background-color: #F3F4F6; 
-            border: 2px solid transparent; border-radius: 12px; font-size: 14px;
-            transition: all 0.2s ease; outline: none; color: #111827;
-        }
-        .admin-input:focus { border-color: #6366F1; background-color: #FFFFFF; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        
-        /* Card Shadow */
-        .admin-card { background: #FFFFFF; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); border: 1px solid #E5E7EB; }
-    </style>
-</head>
-<body class="h-screen overflow-hidden flex flex-col" 
-    x-data="{ 
-        activeTab: 'links', 
-        
-        // Data Profil (Ganti src logo di bawah nanti)
-        profile: { 
-            title: '@daniel_tech', 
-            bio: 'Mahasiswa TRPL - Software Engineering',
-            logoPreview: null // Tempat nyimpen preview gambar kalau diupload
-        },
 
-        // Pilihan Desain yang Diperbanyak
-        design: {
-            bgType: 'flat', // flat, gradient
-            bgColor1: '#F3F4F6',
-            bgColor2: '#E5E7EB',
-            fontFamily: 'Inter',
-            fontColor: '#111827',
-            btnShape: 'rounded-full', // rounded-none, rounded-xl, rounded-full
-            btnStyle: 'fill', // fill, outline, shadow
-            btnColor: '#6366F1',
-            btnTextColor: '#FFFFFF'
-        },
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-        // Database Link
-        links: [
-            { id: 1, title: 'Portfolio Project Laravel', url: 'https://github.com/danzz', active: true, clicks: 125, isLocked: false, password: '' },
-            { id: 2, title: 'Materi Kuliah Semester 2', url: 'https://drive.google.com', active: true, clicks: 42, isLocked: true, password: 'rahasiaadmin' }
-        ],
-
-        // Fungsi Tambah Link
-        addLink() {
-            this.links.unshift({ 
-                id: Date.now(), 
-                title: '', 
-                url: '', 
-                active: true, 
-                clicks: 0, 
-                isLocked: false, 
-                password: '' 
-            });
-        },
-
-        // Fungsi Hapus Link
-        removeLink(id) { 
-            this.links = this.links.filter(l => l.id !== id); 
-        },
-
-        // Fungsi Preview Logo Upload
-        handleLogoUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                this.profile.logoPreview = URL.createObjectURL(file);
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 900: '#1e3a8a' }
+                    }
+                }
             }
         }
-    }">
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased" x-data="{ tab: 'links', showAddLink: false }">
 
-    <header class="bg-white h-[72px] border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0 z-50 shadow-sm">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold shadow-md"><i class="fa-solid fa-link"></i></div>
-            <span class="font-extrabold text-xl tracking-tight text-gray-900 hidden md:block">SmartLink Admin</span>
-        </div>
+    <div class="flex h-screen overflow-hidden">
 
-        <nav class="flex space-x-2 bg-gray-100 p-1 rounded-xl">
-            <button @click="activeTab = 'links'" class="px-6 py-2 rounded-lg font-bold text-sm transition-all" :class="activeTab === 'links' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'">
-                <i class="fa-solid fa-list-ul mr-2"></i> Links
-            </button>
-            <button @click="activeTab = 'design'" class="px-6 py-2 rounded-lg font-bold text-sm transition-all" :class="activeTab === 'design' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'">
-                <i class="fa-solid fa-palette mr-2"></i> Design
-            </button>
-            <button @click="activeTab = 'analytics'" class="px-6 py-2 rounded-lg font-bold text-sm transition-all" :class="activeTab === 'analytics' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'">
-                <i class="fa-solid fa-chart-line mr-2"></i> Analytics
-            </button>
-        </nav>
-
-        <div class="flex items-center gap-4">
-            <div class="hidden md:flex items-center bg-gray-50 rounded-full pl-5 pr-2 py-1.5 gap-3 border border-gray-200">
-                <span class="text-sm font-semibold text-gray-600">smartlink.id/daniel</span>
-                <button class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-200 hover:bg-gray-100 text-indigo-600"><i class="fa-solid fa-share-nodes text-xs"></i></button>
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col hidden md:flex z-20 shadow-sm">
+            <div class="h-16 flex items-center px-6 border-b border-gray-100">
+                <i class="fa-solid fa-link text-brand-600 text-2xl mr-2"></i>
+                <span class="text-xl font-black tracking-tight text-gray-900">SMART<span class="text-brand-600">LINK</span></span>
             </div>
-            <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden border-2 border-gray-300">
-                <img src="https://ui-avatars.com/api/?name=Admin&background=random" alt="Admin" class="w-full h-full object-cover">
-            </div>
-        </div>
-    </header>
 
-    <main class="flex-1 h-full overflow-y-auto p-6 md:p-10 flex justify-center custom-scroll">
-        
-        <div class="w-full max-w-[800px]">
+            <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+                <button @click="tab = 'links'" :class="tab === 'links' ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-600 hover:bg-gray-50'" class="w-full flex items-center px-4 py-3 rounded-xl transition-all">
+                    <i class="fa-solid fa-list-ul w-6"></i> Tautan Saya
+                </button>
+                <button @click="tab = 'appearance'" :class="tab === 'appearance' ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-600 hover:bg-gray-50'" class="w-full flex items-center px-4 py-3 rounded-xl transition-all">
+                    <i class="fa-solid fa-palette w-6"></i> Desain Tampilan
+                </button>
+                <button @click="tab = 'analytics'" :class="tab === 'analytics' ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-600 hover:bg-gray-50'" class="w-full flex items-center px-4 py-3 rounded-xl transition-all">
+                    <i class="fa-solid fa-chart-line w-6"></i> Analitik & Trafik
+                </button>
+                <button @click="tab = 'settings'" :class="tab === 'settings' ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-600 hover:bg-gray-50'" class="w-full flex items-center px-4 py-3 rounded-xl transition-all">
+                    <i class="fa-solid fa-shield-halved w-6"></i> Keamanan & Akun
+                </button>
+            </nav>
 
-            <template x-if="activeTab === 'links'">
-                <div class="space-y-6 animate-in fade-in duration-300 pb-20">
-                    
-                    <div class="flex justify-between items-center mb-6">
-                        <h1 class="text-3xl font-extrabold text-gray-900">Manajemen Tautan</h1>
-                        <button class="px-5 py-2.5 bg-white border border-gray-300 rounded-xl text-sm font-bold text-gray-700 shadow-sm hover:bg-gray-50 flex items-center gap-2">
-                            <i class="fa-regular fa-folder-open"></i> Kategori Baru
-                        </button>
+            <div class="p-4 border-t border-gray-100">
+                <div class="flex items-center gap-3">
+                    <img src="{{ Auth::user()->profile_picture ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name ?? 'Andi') . '&background=2563eb&color=fff' }}" alt="Avatar" class="w-10 h-10 rounded-full border border-gray-200">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-gray-900 truncate">{{ Auth::user()->name ?? 'Andi Pratama' }}</p>
+                        <p class="text-xs text-gray-500 truncate">{{ '@' . (Auth::user()->username ?? 'andipratama') }}</p>
                     </div>
+                </div>
+            </div>
+        </aside>
 
-                    <button @click="addLink()" class="w-full py-5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-base transition-all shadow-lg hover:shadow-indigo-500/30 flex items-center justify-center gap-3">
-                        <i class="fa-solid fa-plus"></i> Tambah Tautan Baru
+        <main class="flex-1 flex flex-col h-screen overflow-hidden bg-gray-50/50">
+            
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 lg:px-10 z-10">
+                <h1 class="text-2xl font-bold text-gray-800 capitalize" x-text="tab === 'links' ? 'Manajemen Tautan' : (tab === 'appearance' ? 'Kustomisasi Desain' : (tab === 'analytics' ? 'Statistik Kunjungan' : 'Pengaturan Akun'))"></h1>
+                <div class="flex items-center gap-4">
+                    <a href="#" target="_blank" class="text-sm font-medium text-gray-500 hover:text-brand-600 hidden sm:block">
+                        smartlink.com/{{ '@' . (Auth::user()->username ?? 'andipratama') }}
+                    </a>
+                    <button class="bg-gray-900 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-gray-800 transition shadow-md">
+                        Bagikan
                     </button>
-
-                    <div class="space-y-5 mt-8">
-                        <template x-for="(link, index) in links" :key="link.id">
-                            <div class="admin-card overflow-hidden transition-all hover:border-indigo-300">
-                                
-                                <div class="flex p-6 gap-4">
-                                    <div class="pt-3 text-gray-300 hover:text-gray-500 cursor-grab">
-                                        <i class="fa-solid fa-grip-vertical text-lg"></i>
-                                    </div>
-                                    
-                                    <div class="flex-1 space-y-3">
-                                        <div>
-                                            <input type="text" x-model="link.title" class="admin-input font-bold text-gray-900" placeholder="Judul Tautan (Contoh: Instagram Saya)">
-                                        </div>
-                                        <div class="flex items-center">
-                                            <div class="bg-gray-100 border-y border-l border-gray-200 px-4 py-3 rounded-l-xl text-gray-500 text-sm"><i class="fa-solid fa-link"></i></div>
-                                            <input type="url" x-model="link.url" class="admin-input rounded-l-none border-l-0" placeholder="https://url-tujuan.com">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="pt-3 flex flex-col items-center gap-4">
-                                        <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
-                                            <input type="checkbox" x-model="link.active" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-gray-300 appearance-none cursor-pointer transition-transform duration-200 ease-in-out z-10" style="top: 2px; left: 2px;" :class="link.active ? 'translate-x-[24px] border-emerald-500' : ''"/>
-                                            <label class="toggle-label block overflow-hidden h-[28px] rounded-full bg-gray-200 cursor-pointer transition-colors duration-200 ease-in-out" :class="link.active ? 'bg-emerald-500' : ''"></label>
-                                        </div>
-                                        <button @click="removeLink(link.id)" class="w-10 h-10 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center" title="Hapus Link">
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="bg-gray-50 border-t border-gray-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                    
-                                    <div class="flex items-center gap-2">
-                                        <button @click="link.isLocked = !link.isLocked" class="px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors" :class="link.isLocked ? 'bg-indigo-100 text-indigo-700 border border-indigo-200' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-100'">
-                                            <i class="fa-solid fa-lock"></i> Kunci Password
-                                        </button>
-                                        
-                                        <div class="ml-4 flex items-center gap-2 text-sm font-semibold text-gray-500 bg-white px-4 py-2 rounded-lg border border-gray-200">
-                                            <i class="fa-solid fa-chart-simple text-indigo-500"></i>
-                                            <span x-text="link.clicks + ' Klik'"></span>
-                                        </div>
-                                    </div>
-
-                                    <div x-show="link.isLocked" x-transition class="w-full sm:w-auto flex-1 max-w-xs flex items-center">
-                                        <div class="bg-indigo-50 border-y border-l border-indigo-200 px-3 py-2 rounded-l-lg text-indigo-500 text-xs font-bold">Password:</div>
-                                        <input type="text" x-model="link.password" placeholder="Masukkan sandi..." class="w-full px-3 py-2 border-y border-r border-indigo-200 rounded-r-lg outline-none text-sm font-semibold focus:border-indigo-500">
-                                    </div>
-                                </div>
-
-                            </div>
-                        </template>
-
-                        <div x-show="links.length === 0" class="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
-                            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400 text-3xl"><i class="fa-solid fa-link-slash"></i></div>
-                            <h3 class="font-bold text-xl text-gray-800">Belum ada tautan</h3>
-                            <p class="text-gray-500 mt-2 text-sm">Klik tombol di atas untuk menambahkan tautan pertama Anda.</p>
-                        </div>
-                    </div>
                 </div>
-            </template>
+            </header>
 
-            <template x-if="activeTab === 'design'">
-                <div class="space-y-8 animate-in fade-in duration-300 pb-20">
-                    <h1 class="text-3xl font-extrabold text-gray-900 mb-8">Kustomisasi Desain</h1>
+            <div class="flex-1 overflow-y-auto p-6 lg:p-10 scroll-smooth">
+                <div class="max-w-3xl mx-auto">
 
-                    <div class="admin-card p-8">
-                        <h2 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-4 mb-6">Profil & Logo Anda</h2>
+                    <div x-show="tab === 'links'" x-transition.opacity.duration.300ms>
                         
-                        <div class="flex flex-col sm:flex-row gap-8 items-start">
-                            <div class="flex flex-col items-center gap-3">
-                                <div class="w-32 h-32 rounded-full border-4 border-gray-100 overflow-hidden bg-gray-50 flex items-center justify-center relative group">
-                                    <template x-if="profile.logoPreview">
-                                        <img :src="profile.logoPreview" class="w-full h-full object-cover">
-                                    </template>
-                                    <template x-if="!profile.logoPreview">
-                                        <i class="fa-solid fa-image text-4xl text-gray-300"></i>
-                                    </template>
-                                    
-                                    <label class="absolute inset-0 bg-black/50 hidden group-hover:flex items-center justify-center cursor-pointer transition-all">
-                                        <span class="text-white text-xs font-bold uppercase"><i class="fa-solid fa-upload mb-1 block"></i> Upload Logo</span>
-                                        <input type="file" accept="image/*" class="hidden" @change="handleLogoUpload">
-                                    </label>
-                                </div>
-                                <p class="text-xs text-gray-500 font-medium">Format: JPG, PNG (Max 2MB)</p>
-                            </div>
-
-                            <div class="flex-1 w-full space-y-5">
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">Judul Halaman (Page Title)</label>
-                                    <input type="text" x-model="profile.title" class="admin-input" placeholder="Nama Brand / Profil Anda">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">Bio Singkat</label>
-                                    <textarea x-model="profile.bio" class="admin-input h-24 resize-none" placeholder="Tuliskan deskripsi singkat..."></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="admin-card p-8">
-                        <h2 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-4 mb-6">Latar Belakang (Background)</h2>
-                        
-                        <div class="space-y-6">
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-3">Tipe Background</label>
-                                <div class="flex gap-4">
-                                    <button @click="design.bgType = 'flat'" class="px-6 py-3 rounded-xl border-2 font-bold text-sm transition-all" :class="design.bgType === 'flat' ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'">Warna Solid</button>
-                                    <button @click="design.bgType = 'gradient'" class="px-6 py-3 rounded-xl border-2 font-bold text-sm transition-all" :class="design.bgType === 'gradient' ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'">Gradasi (Gradient)</button>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">Warna Utama</label>
-                                    <div class="flex items-center gap-3">
-                                        <input type="color" x-model="design.bgColor1" class="w-12 h-12 rounded cursor-pointer border border-gray-200 p-1 bg-white">
-                                        <input type="text" x-model="design.bgColor1" class="admin-input uppercase font-mono text-center w-32">
-                                    </div>
-                                </div>
-                                <div x-show="design.bgType === 'gradient'">
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">Warna Gradasi Kedua</label>
-                                    <div class="flex items-center gap-3">
-                                        <input type="color" x-model="design.bgColor2" class="w-12 h-12 rounded cursor-pointer border border-gray-200 p-1 bg-white">
-                                        <input type="text" x-model="design.bgColor2" class="admin-input uppercase font-mono text-center w-32">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="admin-card p-8">
-                        <h2 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-4 mb-6">Gaya Tombol (Buttons)</h2>
-                        
-                        <div class="space-y-8">
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-3">Bentuk Sudut</label>
-                                <div class="grid grid-cols-3 gap-4">
-                                    <button @click="design.btnShape = 'rounded-none'" class="h-14 bg-gray-900 text-white rounded-none font-bold text-xs" :class="design.btnShape === 'rounded-none' ? 'ring-4 ring-indigo-500 ring-offset-2' : ''">Kotak Tajam</button>
-                                    <button @click="design.btnShape = 'rounded-xl'" class="h-14 bg-gray-900 text-white rounded-xl font-bold text-xs" :class="design.btnShape === 'rounded-xl' ? 'ring-4 ring-indigo-500 ring-offset-2' : ''">Sedikit Melengkung</button>
-                                    <button @click="design.btnShape = 'rounded-full'" class="h-14 bg-gray-900 text-white rounded-full font-bold text-xs" :class="design.btnShape === 'rounded-full' ? 'ring-4 ring-indigo-500 ring-offset-2' : ''">Bulat Kapsul</button>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-3">Gaya Tampilan</label>
-                                <div class="grid grid-cols-3 gap-4">
-                                    <button @click="design.btnStyle = 'fill'" class="h-14 bg-indigo-600 text-white rounded-lg font-bold text-xs" :class="design.btnStyle === 'fill' ? 'ring-4 ring-indigo-500 ring-offset-2' : ''">Warna Penuh</button>
-                                    <button @click="design.btnStyle = 'outline'" class="h-14 bg-white border-2 border-indigo-600 text-indigo-600 rounded-lg font-bold text-xs" :class="design.btnStyle === 'outline' ? 'ring-4 ring-indigo-500 ring-offset-2' : ''">Garis Tepi</button>
-                                    <button @click="design.btnStyle = 'shadow'" class="h-14 bg-white border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(17,24,39,1)] text-gray-900 rounded-lg font-bold text-xs" :class="design.btnStyle === 'shadow' ? 'ring-4 ring-indigo-500 ring-offset-2' : ''">Hard Shadow</button>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">Warna Background Tombol</label>
-                                    <div class="flex items-center gap-3">
-                                        <input type="color" x-model="design.btnColor" class="w-12 h-12 rounded cursor-pointer border border-gray-200 p-1 bg-white">
-                                        <input type="text" x-model="design.btnColor" class="admin-input uppercase font-mono text-center w-32">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">Warna Teks Tombol / Profil</label>
-                                    <div class="flex items-center gap-3">
-                                        <input type="color" x-model="design.btnTextColor" class="w-12 h-12 rounded cursor-pointer border border-gray-200 p-1 bg-white">
-                                        <input type="text" x-model="design.btnTextColor" class="admin-input uppercase font-mono text-center w-32">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end pt-4">
-                        <button class="px-8 py-4 bg-gray-900 text-white rounded-xl font-bold hover:bg-black shadow-lg transition-all flex items-center gap-2">
-                            <i class="fa-solid fa-floppy-disk"></i> Simpan Desain
+                        <button @click="showAddLink = !showAddLink" class="w-full bg-brand-600 text-white rounded-2xl p-4 font-bold text-lg hover:bg-brand-700 transition shadow-lg shadow-brand-500/30 flex items-center justify-center gap-2 mb-8">
+                            <i class="fa-solid fa-plus" x-show="!showAddLink"></i>
+                            <i class="fa-solid fa-xmark" x-show="showAddLink" x-cloak></i>
+                            <span x-text="showAddLink ? 'Batal Tambah Tautan' : 'Tambah Tautan Baru'"></span>
                         </button>
-                    </div>
-                </div>
-            </template>
 
-            <template x-if="activeTab === 'analytics'">
-                <div class="space-y-6 animate-in fade-in duration-300 pb-20">
-                    <div class="flex justify-between items-center mb-6">
-                        <h1 class="text-3xl font-extrabold text-gray-900">Analitik Pengunjung</h1>
-                        <select class="admin-input w-auto font-bold cursor-pointer">
-                            <option>Semua Waktu</option>
-                            <option>30 Hari Terakhir</option>
-                            <option>7 Hari Terakhir</option>
-                        </select>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="admin-card p-8 border-t-4 border-t-blue-500">
-                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-eye"></i></div>
-                            <p class="text-sm font-bold text-gray-500 mb-1">Total Views</p>
-                            <h3 class="text-4xl font-black text-gray-900">1,250</h3>
-                        </div>
-                        <div class="admin-card p-8 border-t-4 border-t-emerald-500">
-                            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-hand-pointer"></i></div>
-                            <p class="text-sm font-bold text-gray-500 mb-1">Total Clicks</p>
-                            <h3 class="text-4xl font-black text-gray-900" x-text="links.reduce((sum, link) => sum + link.clicks, 0)"></h3>
-                        </div>
-                        <div class="admin-card p-8 border-t-4 border-t-purple-500">
-                            <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-percent"></i></div>
-                            <p class="text-sm font-bold text-gray-500 mb-1">Click-Through Rate</p>
-                            <h3 class="text-4xl font-black text-gray-900" x-text="Math.round((links.reduce((sum, link) => sum + link.clicks, 0) / 1250) * 100) + '%'"></h3>
-                        </div>
-                    </div>
-                    
-                    <div class="admin-card p-8 min-h-[400px] flex flex-col items-center justify-center mt-8">
-                        <i class="fa-solid fa-chart-area text-6xl text-gray-200 mb-4"></i>
-                        <h3 class="text-lg font-bold text-gray-700">Grafik Aktivitas</h3>
-                        <p class="text-sm text-gray-500 mt-2 text-center max-w-sm">Integrasikan dengan pustaka seperti Chart.js atau ApexCharts di backend Laravel Anda untuk menampilkan data historis.</p>
-                    </div>
-                </div>
-            </template>
+                        <div x-show="showAddLink" x-collapse class="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 mb-8" x-data="{ linkType: 'public' }">
+                            <h3 class="font-bold text-gray-800 text-lg mb-4">Buat Tautan Baru</h3>
+                            <form action="#" method="POST" class="space-y-4">
+                                @csrf
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Judul Tautan</label>
+                                    <input type="text" placeholder="Contoh: Portofolio Terbaru" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-brand-500 focus:ring-0 outline-none transition font-medium">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">URL Tujuan</label>
+                                    <input type="url" placeholder="https://" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-brand-500 focus:ring-0 outline-none transition font-medium">
+                                </div>
 
-        </div>
-    </main>
+                                <div class="p-4 bg-gray-50 rounded-2xl border border-gray-200">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3"><i class="fa-solid fa-shield-halved"></i> Tingkat Keamanan Tautan</label>
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="privacy" value="public" x-model="linkType" class="peer sr-only">
+                                            <div class="p-3 border-2 border-gray-200 rounded-xl text-center peer-checked:border-green-500 peer-checked:bg-green-50 hover:bg-gray-100 transition">
+                                                <i class="fa-solid fa-globe text-gray-400 peer-checked:text-green-600 block mb-1 text-lg"></i>
+                                                <span class="text-sm font-bold text-gray-600 peer-checked:text-green-700">Publik</span>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="privacy" value="password" x-model="linkType" class="peer sr-only">
+                                            <div class="p-3 border-2 border-gray-200 rounded-xl text-center peer-checked:border-orange-500 peer-checked:bg-orange-50 hover:bg-gray-100 transition">
+                                                <i class="fa-solid fa-key text-gray-400 peer-checked:text-orange-600 block mb-1 text-lg"></i>
+                                                <span class="text-sm font-bold text-gray-600 peer-checked:text-orange-700">Sandi (PIN)</span>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="privacy" value="private" x-model="linkType" class="peer sr-only">
+                                            <div class="p-3 border-2 border-gray-200 rounded-xl text-center peer-checked:border-brand-500 peer-checked:bg-brand-50 hover:bg-gray-100 transition">
+                                                <i class="fa-solid fa-envelope-open-text text-gray-400 peer-checked:text-brand-600 block mb-1 text-lg"></i>
+                                                <span class="text-sm font-bold text-gray-600 peer-checked:text-brand-700">Private Email</span>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <div x-show="linkType === 'password'" x-collapse class="mt-4">
+                                        <input type="text" placeholder="Masukkan Sandi/PIN (Maks 8 Karakter)" class="w-full border-2 border-orange-200 focus:border-orange-500 rounded-xl p-3 outline-none transition bg-white text-sm">
+                                    </div>
+                                    <div x-show="linkType === 'private'" x-collapse class="mt-4">
+                                        <input type="text" placeholder="Masukkan Email yang diizinkan (pisahkan dengan koma)" class="w-full border-2 border-brand-200 focus:border-brand-500 rounded-xl p-3 outline-none transition bg-white text-sm">
+                                        <p class="text-xs text-gray-500 mt-2"><i class="fa-solid fa-circle-info"></i> Fitur ala Google Drive: Hanya email terdaftar yang bisa mengakses tautan ini.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-end">
+                                    <button type="button" class="bg-gray-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 shadow-md">Simpan Tautan</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="space-y-5">
+                            
+                            <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col sm:flex-row justify-between sm:items-center gap-4 group">
+                                <div class="flex items-start gap-4">
+                                    <div class="cursor-move text-gray-300 hover:text-gray-500 pt-1">
+                                        <i class="fa-solid fa-grip-vertical text-xl"></i>
+                                    </div>
+                                    <div class="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-2xl overflow-hidden">
+                                        <i class="fa-brands fa-github text-gray-800"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-900 text-lg group-hover:text-brand-600 transition-colors">Portofolio GitHub</h4>
+                                        <a href="#" class="text-gray-500 text-sm hover:underline"><i class="fa-solid fa-turn-up fa-rotate-90 text-xs"></i> https://github.com/andi</a>
+                                        <div class="flex gap-2 mt-2">
+                                            <span class="px-2.5 py-1 bg-green-50 text-green-600 text-xs font-bold rounded-lg"><i class="fa-solid fa-globe"></i> Publik</span>
+                                            <span class="px-2.5 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg"><i class="fa-solid fa-chart-simple"></i> 450 Klik</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                    </label>
+                                    <button class="text-gray-400 hover:text-brand-600 p-2"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="text-gray-400 hover:text-red-600 p-2"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-3xl p-5 shadow-sm border border-brand-100 bg-brand-50/30 hover:shadow-md transition-shadow flex flex-col sm:flex-row justify-between sm:items-center gap-4 group">
+                                <div class="flex items-start gap-4">
+                                    <div class="cursor-move text-gray-300 hover:text-gray-500 pt-1">
+                                        <i class="fa-solid fa-grip-vertical text-xl"></i>
+                                    </div>
+                                    <div class="w-12 h-12 rounded-xl bg-white border border-brand-100 flex items-center justify-center text-2xl overflow-hidden shadow-sm">
+                                        <i class="fa-brands fa-google-drive text-brand-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-900 text-lg group-hover:text-brand-600 transition-colors">Dokumen PBL (Laporan)</h4>
+                                        <a href="#" class="text-gray-500 text-sm hover:underline"><i class="fa-solid fa-turn-up fa-rotate-90 text-xs"></i> https://docs.google.com/xyz...</a>
+                                        <div class="flex gap-2 mt-2">
+                                            <span class="px-2.5 py-1 bg-brand-100 text-brand-700 text-xs font-bold rounded-lg border border-brand-200"><i class="fa-solid fa-lock"></i> Private Email</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-2 bg-white px-2 py-1 border border-gray-100 rounded-md inline-block"><i class="fa-regular fa-envelope"></i> Akses: dosen_pbd@kampus.ac.id</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                    </label>
+                                    <button class="text-gray-400 hover:text-brand-600 p-2"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="text-gray-400 hover:text-red-600 p-2"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <div x-show="tab === 'appearance'" x-cloak x-transition.opacity.duration.300ms class="space-y-8">
+                        
+                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                            <h3 class="font-bold text-gray-900 text-xl mb-6">Profil Identitas</h3>
+                            <div class="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
+                                <div class="relative">
+                                    <img src="{{ Auth::user()->profile_picture ?? 'https://ui-avatars.com/api/?name=Andi+P&background=2563eb&color=fff' }}" alt="Profile" class="w-28 h-28 rounded-full border-4 border-white shadow-lg object-cover">
+                                    <button class="absolute bottom-0 right-0 bg-gray-900 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-brand-600 transition border-2 border-white">
+                                        <i class="fa-solid fa-camera text-xs"></i>
+                                    </button>
+                                </div>
+                                <div class="flex-1 w-full space-y-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nama Tampilan</label>
+                                        <input type="text" value="{{ Auth::user()->name ?? 'Andi Pratama' }}" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-brand-500 outline-none font-bold text-gray-900">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Biodata Singkat</label>
+                                        <textarea rows="2" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-brand-500 outline-none text-gray-600 resize-none">{{ Auth::user()->bio ?? 'Mahasiswa TRPL Semester 2 | Web Dev Enthusiast' }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                            <h3 class="font-bold text-gray-900 text-xl mb-6">Bentuk & Gaya Tombol</h3>
+                            
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-3">Bentuk Tombol (Corner Style)</label>
+                            <div class="grid grid-cols-3 gap-4 mb-6">
+                                <button class="py-4 border-2 border-brand-500 bg-brand-50 flex justify-center items-center">
+                                    <div class="w-16 h-4 bg-brand-600"></div> </button>
+                                <button class="py-4 border-2 border-gray-200 hover:border-brand-300 rounded-xl flex justify-center items-center transition">
+                                    <div class="w-16 h-4 bg-gray-300 rounded-md"></div> </button>
+                                <button class="py-4 border-2 border-gray-200 hover:border-brand-300 rounded-xl flex justify-center items-center transition">
+                                    <div class="w-16 h-4 bg-gray-300 rounded-full"></div> </button>
+                            </div>
+
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-3">Gaya Tampilan (Display Style)</label>
+                            <div class="grid grid-cols-3 gap-4">
+                                <button class="py-4 border-2 border-gray-200 hover:border-brand-300 rounded-xl flex justify-center items-center transition">
+                                    <div class="w-20 h-6 bg-gray-800 rounded-md"></div> </button>
+                                <button class="py-4 border-2 border-brand-500 bg-brand-50 rounded-xl flex justify-center items-center transition">
+                                    <div class="w-20 h-6 border-2 border-brand-600 rounded-md"></div> </button>
+                                <button class="py-4 border-2 border-gray-200 hover:border-brand-300 rounded-xl flex justify-center items-center transition">
+                                    <div class="w-20 h-6 bg-white shadow-md border border-gray-100 rounded-md"></div> </button>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-6 mt-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Warna Tombol</label>
+                                    <div class="flex items-center gap-3">
+                                        <input type="color" value="#2563eb" class="w-10 h-10 rounded cursor-pointer border-0 p-0">
+                                        <span class="font-mono text-sm text-gray-600 border px-2 py-1 rounded bg-gray-50">#2563eb</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Warna Teks</label>
+                                    <div class="flex items-center gap-3">
+                                        <input type="color" value="#ffffff" class="w-10 h-10 rounded cursor-pointer border-0 p-0">
+                                        <span class="font-mono text-sm text-gray-600 border px-2 py-1 rounded bg-gray-50">#ffffff</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div x-show="tab === 'analytics'" x-cloak x-transition.opacity.duration.300ms class="space-y-6">
+                        
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="bg-gray-900 rounded-3xl p-6 shadow-xl text-white">
+                                <p class="text-gray-400 font-medium mb-1">Total Kunjungan Profil</p>
+                                <h2 class="text-5xl font-black mb-2">1,240</h2>
+                                <p class="text-sm text-green-400"><i class="fa-solid fa-arrow-trend-up"></i> +12% dari minggu lalu</p>
+                            </div>
+                            <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+                                <p class="text-gray-500 font-medium mb-1">Total Tautan Aktif</p>
+                                <h2 class="text-5xl font-black text-brand-600 mb-2">8</h2>
+                                <p class="text-sm text-gray-500">Tautan sehat dan berjalan</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                            <h3 class="font-bold text-gray-900 text-lg mb-6">Performa Link Tertinggi</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-sm font-bold text-gray-700 mb-1">
+                                        <span>Portofolio GitHub</span>
+                                        <span>450 Klik</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                                        <div class="bg-brand-500 h-3 rounded-full" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm font-bold text-gray-700 mb-1">
+                                        <span>Instagram Personal</span>
+                                        <span>320 Klik</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                                        <div class="bg-brand-400 h-3 rounded-full" style="width: 60%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm font-bold text-gray-700 mb-1">
+                                        <span>Dokumen PBL</span>
+                                        <span>95 Klik</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                                        <div class="bg-gray-400 h-3 rounded-full" style="width: 20%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div x-show="tab === 'settings'" x-cloak x-transition.opacity.duration.300ms class="space-y-6">
+                        
+                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-red-100">
+                            <h3 class="font-bold text-red-600 text-xl mb-2"><i class="fa-solid fa-shield-virus"></i> Keamanan Akun (Auto-Ban System)</h3>
+                            <p class="text-gray-600 text-sm mb-6">Sistem mendeteksi tautan yang didaftarkan. Akun akan diblokir otomatis jika mencapai 3 poin pelanggaran (Phishing/Malware).</p>
+                            
+                            <div class="flex items-center gap-4 bg-red-50 p-4 rounded-2xl border border-red-100 mb-6">
+                                <div class="w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-2xl font-black">
+                                    {{ Auth::user()->violation_count ?? '0' }}
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-red-900 text-lg">Poin Pelanggaran Kamu</h4>
+                                    <p class="text-red-700 text-sm">Status Akun: <span class="bg-green-500 text-white px-2 py-0.5 rounded text-xs ml-1 uppercase">Aman</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Email Terdaftar</label>
+                                <input type="email" value="{{ Auth::user()->email ?? 'andi@trpl.kampus.ac.id' }}" disabled class="w-full border border-gray-200 bg-gray-50 rounded-xl p-3 text-gray-500 font-medium cursor-not-allowed">
+                            </div>
+                            <button class="text-brand-600 font-bold text-sm hover:underline">Ubah Kata Sandi (Reset Password)</button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </main>
+
+        <aside class="w-[400px] bg-gray-50 border-l border-gray-200 hidden xl:flex items-center justify-center p-8 z-10 shadow-inner">
+            
+            <div class="relative w-[320px] h-[650px] border-[10px] border-gray-900 rounded-[3rem] shadow-2xl bg-white overflow-hidden flex flex-col">
+                
+                <div class="absolute top-0 inset-x-0 h-6 bg-gray-900 rounded-b-3xl w-40 mx-auto z-20"></div>
+
+                <div class="flex-1 w-full h-full overflow-y-auto bg-gray-50 flex flex-col items-center pt-16 px-5 pb-10 scrollbar-hide">
+                    
+                    <img src="{{ Auth::user()->profile_picture ?? 'https://ui-avatars.com/api/?name=Andi+P&background=2563eb&color=fff' }}" alt="Profile" class="w-24 h-24 rounded-full border-4 border-white shadow-md mb-4 object-cover">
+                    
+                    <h2 class="text-lg font-black text-gray-900">{{ Auth::user()->name ?? 'Andi Pratama' }}</h2>
+                    <p class="text-sm text-gray-600 text-center mt-1 font-medium">{{ Auth::user()->bio ?? 'Mahasiswa TRPL Semester 2 | Web Dev Enthusiast' }}</p>
+
+                    <div class="w-full space-y-4 mt-8">
+                        
+                        <a href="#" class="flex items-center justify-center w-full py-3.5 px-4 bg-transparent border-2 border-brand-600 text-brand-700 font-bold rounded-lg hover:bg-brand-50 transition transform hover:scale-105">
+                            <i class="fa-brands fa-github text-xl absolute left-6"></i>
+                            Portofolio GitHub
+                        </a>
+
+                        <a href="#" class="flex items-center justify-center w-full py-3.5 px-4 bg-transparent border-2 border-brand-600 text-brand-700 font-bold rounded-lg hover:bg-brand-50 transition transform hover:scale-105 opacity-80">
+                            <i class="fa-solid fa-lock text-sm absolute left-6 text-gray-400"></i>
+                            Dokumen PBL
+                        </a>
+
+                    </div>
+
+                    <div class="mt-auto pt-10 pb-2">
+                        <a href="#" class="text-xs font-black tracking-widest text-gray-400 hover:text-gray-600 transition">SMARTLINK BIO</a>
+                    </div>
+
+                </div>
+            </div>
+
+        </aside>
+<form method="POST" action="{{ route('logout') }}">
+    @csrf
+    <button type="submit" class="flex items-center space-x-2 text-red-500 hover:text-red-700 font-bold transition-colors">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Keluar</span>
+    </button>
+</form>
+<p>Role saya saat ini adalah: {{ auth()->user()->role }}</p>
+    </div>
+
+    <style>
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        [x-cloak] { display: none !important; }
+    </style>
 </body>
 </html>

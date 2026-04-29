@@ -47,14 +47,17 @@
                     <p class="text-gray-500 font-medium text-sm md:text-base">Masuk ke LinkInBio Anda</p>
                 </div>
 
-                <form action="#" class="space-y-4">
+                <form action="{{ route('login') }}" method="POST" class="space-y-4">
+                    @csrf
                     <div>
-                        <input type="text" name="username" placeholder="Email atau nama pengguna" 
+                        <input type="email" name="email" value="{{ old('email') }}" placeholder="Email" required autofocus
                             class="w-full p-3.5 md:p-4 bg-gray-100 border-2 border-transparent focus:border-black focus:bg-white rounded-xl transition-all outline-none font-medium text-gray-700 text-sm md:text-base">
+                        @error('email') <p class="text-red-500 text-xs mt-1 font-bold">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <input type="password" name="password" placeholder="Kata sandi" 
+                        <input type="password" name="password" placeholder="Kata sandi" required
                             class="w-full p-3.5 md:p-4 bg-gray-100 border-2 border-transparent focus:border-black focus:bg-white rounded-xl transition-all outline-none font-medium text-gray-700 text-sm md:text-base">
+                        @error('password') <p class="text-red-500 text-xs mt-1 font-bold">{{ $message }}</p> @enderror
                     </div>
 
                     <button type="submit" class="w-full p-3.5 md:p-4 bg-black text-white font-extrabold rounded-full hover:bg-gray-800 transition-all duration-300 shadow-lg active:scale-95 mt-2 text-sm md:text-base">
@@ -64,19 +67,16 @@
 
                 <div class="mt-8 md:mt-10 space-y-4 text-center lg:text-left border-t border-gray-100 pt-6 md:pt-8">
                     <div class="flex flex-wrap justify-center lg:justify-start gap-3 md:gap-4 text-xs md:text-sm font-bold text-blue-600">
-                        <a href="#" class="hover:underline">Lupa kata sandi?</a>
-                        <span class="text-gray-300 hidden sm:block">•</span>
-                        <a href="#" class="hover:underline">Lupa nama pengguna?</a>
+                        <a href="{{ route('password.request') }}" class="hover:underline">Lupa kata sandi?</a>
                     </div>
                     <p class="text-xs md:text-sm font-medium text-gray-500">
-                        Tidak memiliki akun? <a href="/register" class="text-blue-600 font-black hover:underline">Daftar</a>
+                        Tidak memiliki akun? <a href="{{ route('register') }}" class="text-blue-600 font-black hover:underline">Daftar</a>
                     </p>
                 </div>
             </div>
         </div>
 
         <div class="hidden lg:flex lg:w-[45%] bg-[#1E41B2] relative overflow-hidden items-center justify-center">
-            
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[130%] h-[90%] bg-[#D2E823] rotate-12 rounded-[120px]"></div>
 
             <div class="absolute top-[10%] left-[15%] w-12 h-12 bg-[#FF0000]/80 rounded-xl flex items-center justify-center text-white shadow-lg rotate-[-15deg] floating-card" style="animation-delay: 0.5s;">
@@ -146,3 +146,7 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</body>
+</html>
