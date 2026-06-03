@@ -8,7 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 
-#[Fillable(['name', 'username', 'email', 'password', 'role', 'status', 'violation_count', 'bio', 'profile_picture', 'background_image'])]
+#[Fillable(['name', 'username', 'email', 'password', 'role', 'status', 'violation_count', 'bio', 'profile_picture', 'visits'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -23,15 +23,17 @@ class User extends Authenticatable
         ];
     }
 
-    // Relasi: Satu User punya banyak Link
-    public function links()
-    {
+    // Relasi ke Links dan ViolationLogs tetap aman
+    public function links() {
         return $this->hasMany(Link::class);
     }
 
-    // Relasi: Satu User punya banyak Log Pelanggaran
-    public function violationLogs()
-    {
+    public function violationLogs() {
         return $this->hasMany(ViolationLog::class);
+    }
+
+    // TAMBAHKAN INI: Relasi 1-to-1 ke PageSetting
+    public function pageSetting() {
+        return $this->hasOne(PageSetting::class);
     }
 }
