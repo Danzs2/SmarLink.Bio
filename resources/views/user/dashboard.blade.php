@@ -559,8 +559,8 @@
                             <h3 class="font-bold text-rose-600 text-lg mb-2"><i class="fa-solid fa-shield-virus mr-1"></i> Keamanan Akun</h3>
                             <div class="flex items-center gap-4 bg-white p-4 rounded-xl border border-rose-100 mt-4 shadow-sm">
                                 <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xl font-black">
-                                    {{ Auth::user()->violation_count ?? '0' }}
-                                </div>
+    {{ Auth::user()->violation_count ?? '0' }}
+</div>
                                 <div>
                                     <h4 class="font-bold text-gray-900 text-base">Poin Pelanggaran Saat Ini</h4>
                                     <p class="text-gray-500 text-xs mt-1">Batas maksimal: 3 poin</p>
@@ -711,6 +711,6 @@
             </form>
         </div>
     </div>
-
+    @include('components.alerts')
 </body>
 </html>

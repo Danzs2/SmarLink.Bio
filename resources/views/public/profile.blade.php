@@ -135,11 +135,10 @@
         <?php endif; ?>
     </div>
 
-    <footer class="mt-auto pt-12 opacity-40 hover:opacity-100 transition relative z-10">
-        <p class="text-[10px] font-black uppercase tracking-widest" 
-           style="<?= $bgType === 'image' || ($bgType === 'solid' && $bgColor === '#1E1E1E') ? 'color: white;' : 'color: #111827;' ?>">
-           SmartLink Bio
-        </p>
+    <footer class="mt-auto pt-12 pb-6 opacity-40 hover:opacity-100 transition relative z-10 flex justify-center w-full">
+        <img src="{{ asset('images/logo.png') }}" alt="SmartLink Logo" 
+             class="h-5 w-auto object-contain transition-all duration-300"
+             style="<?= $bgType === 'image' || ($bgType === 'solid' && $bgColor === '#1E1E1E') ? 'filter: brightness(0) invert(1);' : 'filter: grayscale(100%) contrast(200%); opacity: 0.8;' ?>">
     </footer>
 
 </body>

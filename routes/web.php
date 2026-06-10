@@ -48,4 +48,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::put('/admin/users/{id}', [App\Http\Controllers\AdminController::class, 'update']);
 });
 
+Route::middleware(['auth', \App\Http\Middleware\CheckBanStatus::class])->group(function () {
+    
+    Route::get('/dashboard', [LinkController::class, 'index'])->name('dashboard');
+    Route::post('/links', [LinkController::class, 'store'])->name('links.store');
+    
+
+});
+
 require __DIR__.'/auth.php';

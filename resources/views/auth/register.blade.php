@@ -156,6 +156,6 @@
             </div>
         </div>
     </div>
-
+    @include('components.alerts')
 </body>
 </html>
