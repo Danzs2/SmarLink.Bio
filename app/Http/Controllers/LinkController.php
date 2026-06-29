@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Hash; // <-- Tambahan untuk fitur Hash
+use Illuminate\Support\Facades\Hash;
 
 class LinkController extends Controller
 {
@@ -91,7 +91,7 @@ class LinkController extends Controller
         } else {
             $link->is_private = $request->privacy_mode === 'public' ? 0 : 1;
             
-            // PERBAIKAN: Password dienkripsi menggunakan Hash sebelum disimpan
+            // Password dienkripsi menggunakan Hash sebelum disimpan
             if ($request->privacy_mode === 'password') {
                 $link->link_password = Hash::make($request->link_password);
             }
@@ -100,15 +100,6 @@ class LinkController extends Controller
         $link->is_active = 1;
         $link->save();
 
-        if ($request->type === 'custom' && $request->privacy_mode === 'email' && $request->allowed_emails) {
-            $emails = explode(',', $request->allowed_emails);
-            foreach ($emails as $email) {
-                DB::table('link_permissions')->insert([
-                    'link_id' => $link->id, 'allowed_email' => trim($email),
-                    'created_at' => now(), 'updated_at' => now(),
-                ]);
-            }
-        }
         return back()->with('success', 'Tautan berhasil ditambahkan dan dinyatakan aman!');
     }
 
@@ -129,26 +120,13 @@ class LinkController extends Controller
             $link->is_private = $request->privacy_mode === 'public' ? 0 : 1;
             
             if ($request->privacy_mode === 'password') {
-                // PERBAIKAN: Hanya enkripsi password JIKA user memasukkan teks baru
+                // Hanya enkripsi password JIKA user memasukkan teks baru
                 if ($request->filled('link_password') && $request->link_password !== $link->link_password) {
                     $link->link_password = Hash::make($request->link_password);
                 }
-                DB::table('link_permissions')->where('link_id', $link->id)->delete();
-            } elseif ($request->privacy_mode === 'email') {
-                $link->link_password = null;
-                DB::table('link_permissions')->where('link_id', $link->id)->delete();
-                if ($request->allowed_emails) {
-                    $emails = explode(',', $request->allowed_emails);
-                    foreach ($emails as $email) {
-                        DB::table('link_permissions')->insert([
-                            'link_id' => $link->id, 'allowed_email' => trim($email),
-                            'created_at' => now(), 'updated_at' => now(),
-                        ]);
-                    }
-                }
             } else { 
+                // Jika dirubah jadi public, kosongkan password
                 $link->link_password = null;
-                DB::table('link_permissions')->where('link_id', $link->id)->delete();
             }
         }
 
@@ -159,7 +137,6 @@ class LinkController extends Controller
     public function destroy($id)
     {
         $link = Link::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
-        DB::table('link_permissions')->where('link_id', $link->id)->delete();
         DB::table('analytics')->where('link_id', $link->id)->delete();
         $link->delete();
         return back()->with('success', 'Tautan berhasil dihapus!');
@@ -183,8 +160,9 @@ class LinkController extends Controller
             return redirect()->away($link->url);
         }
 
-        if (!$link->link_password && !Auth::check()) {
-            return redirect()->route('login')->with('info', 'Tautan ini terbatas, silakan login dulu.');
+        if (!$link->link_password) {
+            // Jika statusnya private tapi tidak ada password
+            return redirect()->route('login')->with('info', 'Tautan ini terbatas.');
         }
 
         return view('public.verify', compact('link'));
@@ -195,7 +173,7 @@ class LinkController extends Controller
         $link = Link::findOrFail($id);
 
         if ($link->link_password) {
-            // PERBAIKAN: Cek password menggunakan Hash::check() dan tetap dukung password lama
+            // Cek password menggunakan Hash::check() dan tetap dukung password lama
             if (Hash::check($request->password, $link->link_password) || $request->password === $link->link_password) {
                 DB::table('analytics')->insert(['link_id' => $link->id, 'clicked_at' => now()]);
                 return redirect()->away($link->url);
@@ -203,22 +181,12 @@ class LinkController extends Controller
             return back()->with('error', 'Password salah!');
         }
 
-        $userEmail = Auth::user()->email;
-
         if (Auth::id() === $link->user_id) {
             DB::table('analytics')->insert(['link_id' => $link->id, 'clicked_at' => now()]);
             return redirect()->away($link->url);
         }
 
-        $isAllowed = DB::table('link_permissions')
-            ->where('link_id', $link->id)->where('allowed_email', $userEmail)->exists();
-
-        if ($isAllowed) {
-            DB::table('analytics')->insert(['link_id' => $link->id, 'clicked_at' => now()]);
-            return redirect()->away($link->url);
-        }
-
-        return back()->with('error', 'Akses Ditolak! Email kamu (' . $userEmail . ') tidak ada di daftar izin.');
+        return back()->with('error', 'Akses Ditolak! Tautan ini terkunci.');
     }
 
     public function showProfile($username)

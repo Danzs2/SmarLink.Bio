@@ -23,8 +23,4 @@ class Link extends Model
     {
         return $this->hasMany(Analytic::class);
     }
-    public function permissions()
-    {
-        return $this->hasMany(LinkPermission::class);
-    }
 }
